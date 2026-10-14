@@ -4,7 +4,7 @@
  *
  * Adds a repeatable, sortable FAQs meta box (a question and a formatted
  * answer, which can include images) to posts and the Tour Operator post
- * types, and a "Post FAQs" variation of the Yoast FAQ block
+ * types, and a "TO FAQs" variation of the Yoast FAQ block
  * (`yoast/faq-block`) that renders those fields on the front end.
  *
  * Yoast SEO only builds its FAQPage schema from FAQ blocks it finds in the
@@ -41,7 +41,7 @@ class Faq_Fields {
 	const BLOCK = 'yoast/faq-block';
 
 	/**
-	 * The block attribute that marks a Yoast FAQ block as the "Post FAQs" variation.
+	 * The block attribute that marks a Yoast FAQ block as the "TO FAQs" variation.
 	 *
 	 * @var string
 	 */
@@ -176,7 +176,7 @@ class Faq_Fields {
 			[
 				'id'         => self::FIELD,
 				'name'       => '',
-				'desc'       => esc_html__( 'Shown by the "Post FAQs" block, and output as FAQ structured data by Yoast SEO.', 'to-faq' ),
+				'desc'       => esc_html__( 'Shown by the "TO FAQs" block, and output as FAQ structured data by Yoast SEO.', 'to-faq' ),
 				'type'       => 'group',
 				'repeatable' => true,
 				'options'    => [
@@ -239,7 +239,7 @@ class Faq_Fields {
 	}
 
 	/**
-	 * Renders the "Post FAQs" variation from the post's FAQ fields.
+	 * Renders the "TO FAQs" variation from the post's FAQ fields.
 	 *
 	 * Standard Yoast FAQ blocks are returned unchanged. The variation renders
 	 * nothing when the post has no FAQs.
@@ -333,12 +333,12 @@ class Faq_Fields {
 		/**
 		 * Filters whether the post's FAQ fields are added to the Yoast FAQ schema.
 		 *
-		 * Defaults to true only when the "Post FAQs" block is on the page, because
+		 * Defaults to true only when the "TO FAQs" block is on the page, because
 		 * FAQ structured data should match content that is visible to visitors.
 		 *
 		 * @since 0.1.0
 		 *
-		 * @param bool $on_page Whether the "Post FAQs" block is on the page.
+		 * @param bool $on_page Whether the "TO FAQs" block is on the page.
 		 * @param int  $post_id The post ID.
 		 */
 		if ( ! apply_filters( 'lsx_to_faq_add_schema', $on_page, $post_id ) ) {
@@ -563,7 +563,7 @@ class Faq_Fields {
 	}
 
 	/**
-	 * Enqueues the editor script that registers the "Post FAQs" variation.
+	 * Enqueues the editor script that registers the "TO FAQs" variation.
 	 *
 	 * The script adds the variation attribute through the
 	 * `blocks.registerBlockType` filter, so it must load before Yoast
