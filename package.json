@@ -1,0 +1,24 @@
+{
+  "name": "to-faq",
+  "version": "0.1.0",
+  "description": "Tour Operator FAQ turns the Yoast FAQ block into an accessible, collapsible accordion.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "wp-scripts build --config webpack.config.cjs",
+    "build:production": "NODE_ENV=production npm run build",
+    "start": "wp-scripts start --config webpack.config.cjs",
+    "lint": "npm run lint:js && npm run lint:css",
+    "lint:js": "wp-scripts lint-js src",
+    "lint:css": "wp-scripts lint-style src",
+    "i18n": "wp-scripts makepot",
+    "packages-update": "wp-scripts packages-update"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^30.0.0",
+    "webpack-remove-empty-scripts": "^1.0.0"
+  }
+}
