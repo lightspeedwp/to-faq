@@ -39,7 +39,7 @@ function lsx_to_faq_init() {
 	// FAQ pattern and template part (requires Yoast SEO). The faq area is registered by Tour Operator core.
 	new lsx\to_faq\Template_Parts();
 
-	// Repeatable FAQ fields and the "Post FAQs" Yoast FAQ block variation (requires Yoast SEO and SCF).
+	// Repeatable FAQ fields and the "Post FAQs" Yoast FAQ block variation (requires Yoast SEO; the meta box uses Tour Operator's bundled CMB2).
 	if ( lsx\to_faq\Faq_Fields::is_supported() ) {
 		new lsx\to_faq\Faq_Fields();
 	}
