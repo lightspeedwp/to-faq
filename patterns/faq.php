@@ -1,6 +1,6 @@
 <?php
 /**
- * Pattern: FAQ
+ * Pattern: TO FAQ
  *
  * A heading followed by a Yoast FAQ block. Registered as `to-faq/faq` by
  * lsx\to_faq\Template_Parts, only while Yoast SEO is active, and called from
