@@ -37,7 +37,10 @@ npm ci
 npm run build   # compile src/ to build/
 npm start       # watch mode
 npm run lint
+npm run i18n    # regenerate languages/to-faq.pot
 ```
+
+`npm run i18n` runs `wp i18n make-pot`, so it needs [WP-CLI](https://wp-cli.org/) with the `wp` command on your `PATH`.
 
 | Source | Build output |
 | --- | --- |
