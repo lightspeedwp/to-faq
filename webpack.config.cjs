@@ -7,6 +7,7 @@ module.exports = {
 	entry: () => ( {
 		...( typeof defaultConfig.entry === 'function' ? defaultConfig.entry() : defaultConfig.entry ),
 		'js/faq-accordion': path.resolve( process.cwd(), 'src/js', 'faq-accordion.js' ),
+		'js/faq-fields': path.resolve( process.cwd(), 'src/js', 'faq-fields.js' ),
 		'css/faq-accordion': path.resolve( process.cwd(), 'src/css', 'faq-accordion.scss' ),
 	} ),
 	output: {
