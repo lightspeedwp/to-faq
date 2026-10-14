@@ -88,7 +88,7 @@ class Faq_Fields {
 	 * @since 0.1.0
 	 */
 	public function __construct() {
-		add_action( 'cmb2_admin_init', [ $this, 'register_fields' ] );
+		add_action( 'cmb2_admin_init', [ $this, 'register_fields' ], 100 );
 		add_filter( 'register_block_type_args', [ $this, 'extend_block_type' ], 10, 2 );
 		add_filter( 'render_block_' . self::BLOCK, [ $this, 'render_block' ], 10, 3 );
 		add_filter( 'wpseo_schema_graph_pieces', [ $this, 'add_questions_to_schema' ], 10, 2 );
