@@ -33,7 +33,8 @@ The `faq` template part area is registered by the Tour Operator core plugin, not
 ## Requirements
 
 - [Tour Operator](https://wordpress.org/plugins/tour-operator/), declared with the `Requires Plugins` header. It provides the CMB2 library used by the FAQs meta box.
-- [Yoast SEO](https://wordpress.org/plugins/wordpress-seo/) for the FAQ block, the TO FAQs variation, the pattern and the template part.
+- [Yoast SEO](https://wordpress.org/plugins/wordpress-seo/), also declared with `Requires Plugins`. It provides the FAQ block that every feature builds on.
+- WordPress 6.7 and PHP 8.2, matching Tour Operator. WordPress enforces `Requires Plugins` from 6.5.
 
 ## Development
 
