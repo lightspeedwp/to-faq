@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Tour Operator FAQ
  * Plugin URI:        https://github.com/lightspeedwp/to-faq
- * Description:       FAQs for Tour Operator: a collapsible Yoast FAQ block, repeatable FAQ fields with a "Post FAQs" block variation, and an FAQ template part.
+ * Description:       FAQs for Tour Operator: a collapsible Yoast FAQ block, repeatable FAQ fields with a "TO FAQs" block variation, and an FAQ template part.
  * Version:           0.1.0
  * Requires at least: 6.4
  * Requires PHP:      8.0
