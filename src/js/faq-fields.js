@@ -45,11 +45,11 @@ addFilter(
  * Register Post FAQs as a yoast/faq-block variation
  */
 registerBlockVariation( BLOCK_NAME, {
-	name: 'lsx-to-post-faqs',
-	title: __( 'Post FAQs', 'to-faq' ),
+	name: 'lsx-tour-operator/faqs',
+	title: __( 'TO FAQs', 'to-faq' ),
 	icon: 'editor-help',
 	description: __(
-		"Shows the questions from this post's FAQ fields, with Yoast FAQ structured data. Nothing is shown if the post has no FAQs.",
+		"Shows the questions from this Tour Operator's FAQ fields, with Yoast FAQ structured data. Nothing is shown if the post has no FAQs.",
 		'to-faq'
 	),
 	keywords: [ __( 'faq', 'to-faq' ), __( 'questions', 'to-faq' ) ],
@@ -70,9 +70,9 @@ function PostFaqsPlaceholder() {
 		<div { ...blockProps }>
 			<Placeholder
 				icon="editor-help"
-				label={ __( 'Post FAQs', 'to-faq' ) }
+				label={ __( 'TO FAQs', 'to-faq' ) }
 				instructions={ __(
-					"The questions from the post's FAQ fields are shown here on the front end. Edit them in the FAQs panel below the post content. If the post has no FAQs, this block is hidden.",
+					"The questions from the post's Tour Operator fields are shown here on the front end. Edit them in the FAQs panel below the post content. If the post has no FAQs, this block is hidden.",
 					'to-faq'
 				) }
 			/>

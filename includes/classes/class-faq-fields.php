@@ -2,17 +2,19 @@
 /**
  * FAQ Fields.
  *
- * Adds a repeatable set of FAQ fields (question, answer, and an optional
- * image) to supported post types, and a "Post FAQs" variation of the Yoast
- * FAQ block (`yoast/faq-block`) that renders those fields on the front end.
+ * Adds a repeatable, sortable FAQs meta box (a question and a formatted
+ * answer, which can include images) to posts and the Tour Operator post
+ * types, and a "TO FAQs" variation of the Yoast FAQ block
+ * (`yoast/faq-block`) that renders those fields on the front end.
  *
  * Yoast SEO only builds its FAQPage schema from FAQ blocks it finds in the
  * post content, so the field questions are also passed into Yoast's schema
  * context. That way Yoast keeps generating and maintaining the structured
  * data, and this class only supplies the questions.
  *
- * Requires Yoast SEO (for the FAQ block and schema) and Secure Custom Fields
- * (for the repeater fields).
+ * Requires Yoast SEO (for the FAQ block and schema) and Tour Operator. The
+ * meta box uses the CMB2 library bundled with Tour Operator, registered the
+ * same way as the Tour Operator meta boxes.
  *
  * @package TO_FAQ
  * @since   0.1.0
@@ -39,28 +41,25 @@ class Faq_Fields {
 	const BLOCK = 'yoast/faq-block';
 
 	/**
-	 * The block attribute that marks a Yoast FAQ block as the "Post FAQs" variation.
+	 * The block attribute that marks a Yoast FAQ block as the "TO FAQs" variation.
 	 *
 	 * @var string
 	 */
 	const ATTRIBUTE = 'lsxToPostFaqs';
 
 	/**
-	 * The repeater field name, also used as the meta key.
+	 * The CMB2 group field ID, also used as the meta key.
 	 *
 	 * @var string
 	 */
 	const FIELD = 'lsx_to_faqs';
 
 	/**
-	 * The repeater field key.
-	 *
-	 * Values are read by key because SCF can only resolve a field by name once
-	 * its reference meta has been saved for the post.
+	 * The CMB2 meta box ID.
 	 *
 	 * @var string
 	 */
-	const FIELD_KEY = 'field_lsx_to_faqs';
+	const METABOX = 'lsx_to_faq_metabox';
 
 	/**
 	 * Script handle for the editor variation.
@@ -89,7 +88,7 @@ class Faq_Fields {
 	 * @since 0.1.0
 	 */
 	public function __construct() {
-		add_action( 'acf/include_fields', [ $this, 'register_fields' ] );
+		add_action( 'cmb2_admin_init', [ $this, 'register_fields' ], 100 );
 		add_filter( 'register_block_type_args', [ $this, 'extend_block_type' ], 10, 2 );
 		add_filter( 'render_block_' . self::BLOCK, [ $this, 'render_block' ], 10, 3 );
 		add_filter( 'wpseo_schema_graph_pieces', [ $this, 'add_questions_to_schema' ], 10, 2 );
@@ -99,11 +98,15 @@ class Faq_Fields {
 	/**
 	 * Checks whether the plugins this feature depends on are active.
 	 *
+	 * The FAQ fields only feed the Yoast FAQ block, so Yoast SEO is required.
+	 * CMB2 is bundled with Tour Operator, and the meta box is only registered
+	 * when CMB2 fires `cmb2_admin_init`.
+	 *
 	 * @since 0.1.0
 	 * @return bool
 	 */
 	public static function is_supported() {
-		return defined( 'WPSEO_VERSION' ) && function_exists( 'acf_add_local_field_group' );
+		return defined( 'WPSEO_VERSION' );
 	}
 
 	/**
@@ -113,101 +116,103 @@ class Faq_Fields {
 	 * @return string[]
 	 */
 	public function get_post_types() {
+		$post_types = [ 'post' ];
+
+		if ( function_exists( 'lsx_to_get_post_types' ) ) {
+			$post_types = array_merge( $post_types, array_keys( (array) lsx_to_get_post_types() ) );
+		}
+
 		/**
 		 * Filters the post types that get the FAQ fields.
 		 *
 		 * Other plugins can add their post types here, for example:
 		 *
 		 *     add_filter( 'lsx_to_faq_post_types', function ( $post_types ) {
-		 *         return array_merge( $post_types, [ 'post', 'page' ] );
+		 *         $post_types[] = 'page';
+		 *         return $post_types;
 		 *     } );
 		 *
 		 * @since 0.1.0
 		 *
-		 * @param string[] $post_types Post type slugs. Default `[ 'tour', 'accommodation', 'destination' ]`.
+		 * @param string[] $post_types Post type slugs. Default `post` plus the
+		 *                             Tour Operator post types from `lsx_to_get_post_types()`.
 		 */
-		$post_types = apply_filters( 'lsx_to_faq_post_types', [ 'tour', 'accommodation', 'destination' ] );
+		$post_types = apply_filters( 'lsx_to_faq_post_types', $post_types );
 
 		return array_values( array_unique( array_filter( (array) $post_types, 'is_string' ) ) );
 	}
 
 	/**
-	 * Registers the FAQ repeater field group.
+	 * Registers the FAQs meta box.
 	 *
-	 * Registered in PHP rather than Local JSON so the location rules can follow
-	 * the `lsx_to_faq_post_types` filter.
+	 * Uses CMB2 in the same way as the Tour Operator meta boxes
+	 * (`lsx\admin\Setup::register_cmb2_fields()`). The answer is a WYSIWYG
+	 * field like the itinerary description, so it supports basic formatting and
+	 * images through Add Media. Rows can be reordered with the up and down
+	 * arrows.
 	 *
 	 * @since 0.1.0
 	 * @return void
 	 */
 	public function register_fields() {
-		$location = [];
-
-		foreach ( $this->get_post_types() as $post_type ) {
-			$location[] = [
-				[
-					'param'    => 'post_type',
-					'operator' => '==',
-					'value'    => $post_type,
-				],
-			];
-		}
-
-		if ( empty( $location ) ) {
+		// CMB2 is bundled with Tour Operator, so it may not be loaded.
+		if ( ! function_exists( 'new_cmb2_box' ) ) {
 			return;
 		}
 
-		acf_add_local_field_group(
+		$post_types = $this->get_post_types();
+
+		if ( empty( $post_types ) ) {
+			return;
+		}
+
+		$cmb = new_cmb2_box(
 			[
-				'key'         => 'group_lsx_to_faqs',
-				'title'       => __( 'FAQs', 'to-faq' ),
-				'fields'      => [
-					[
-						'key'          => self::FIELD_KEY,
-						'label'        => __( 'Frequently asked questions', 'to-faq' ),
-						'name'         => self::FIELD,
-						'type'         => 'repeater',
-						'instructions' => __( 'Shown by the "Post FAQs" block, and output as FAQ structured data by Yoast SEO.', 'to-faq' ),
-						'layout'       => 'block',
-						'button_label' => __( 'Add question', 'to-faq' ),
-						'collapsed'    => 'field_lsx_to_faqs_question',
-						'sub_fields'   => [
-							[
-								'key'      => 'field_lsx_to_faqs_question',
-								'label'    => __( 'Question', 'to-faq' ),
-								'name'     => 'question',
-								'type'     => 'text',
-								'required' => 1,
-							],
-							[
-								'key'          => 'field_lsx_to_faqs_answer',
-								'label'        => __( 'Answer', 'to-faq' ),
-								'name'         => 'answer',
-								'type'         => 'textarea',
-								'instructions' => __( 'Links, bold, and italic HTML are allowed.', 'to-faq' ),
-								'required'     => 1,
-								'rows'         => 4,
-								'new_lines'    => 'br',
-							],
-							[
-								'key'           => 'field_lsx_to_faqs_image',
-								'label'         => __( 'Image', 'to-faq' ),
-								'name'          => 'image',
-								'type'          => 'image',
-								'instructions'  => __( 'Optional. Shown below the answer.', 'to-faq' ),
-								'return_format' => 'id',
-								'preview_size'  => 'medium',
-								'library'       => 'all',
-							],
-						],
-					],
+				'id'           => self::METABOX,
+				'title'        => esc_html__( 'FAQs', 'to-faq' ),
+				'object_types' => $post_types,
+				'context'      => 'normal',
+				'priority'     => 'high',
+				'show_names'   => true,
+			]
+		);
+
+		$group_id = $cmb->add_field(
+			[
+				'id'         => self::FIELD,
+				'name'       => '',
+				'desc'       => esc_html__( 'Shown by the "TO FAQs" block, and output as FAQ structured data by Yoast SEO.', 'to-faq' ),
+				'type'       => 'group',
+				'repeatable' => true,
+				'options'    => [
+					// {#} is replaced by the row number.
+					'group_title'   => esc_html__( 'Question {#}', 'to-faq' ),
+					'add_button'    => esc_html__( 'Add question', 'to-faq' ),
+					'remove_button' => esc_html__( 'Remove', 'to-faq' ),
+					'sortable'      => true,
 				],
-				'location'    => $location,
-				'position'    => 'normal',
-				'style'       => 'default',
-				'menu_order'  => 20,
-				'active'      => true,
-				'description' => __( 'Repeatable FAQ fields used by the Yoast FAQ block "Post FAQs" variation.', 'to-faq' ),
+			]
+		);
+
+		$cmb->add_group_field(
+			$group_id,
+			[
+				'id'   => 'question',
+				'name' => esc_html__( 'Question', 'to-faq' ),
+				'type' => 'text',
+			]
+		);
+
+		$cmb->add_group_field(
+			$group_id,
+			[
+				'id'      => 'answer',
+				'name'    => esc_html__( 'Answer', 'to-faq' ),
+				'desc'    => esc_html__( 'Use Add Media to include an image.', 'to-faq' ),
+				'type'    => 'wysiwyg',
+				'options' => [
+					'editor_height' => '100',
+				],
 			]
 		);
 	}
@@ -239,7 +244,7 @@ class Faq_Fields {
 	}
 
 	/**
-	 * Renders the "Post FAQs" variation from the post's FAQ fields.
+	 * Renders the "TO FAQs" variation from the post's FAQ fields.
 	 *
 	 * Standard Yoast FAQ blocks are returned unchanged. The variation renders
 	 * nothing when the post has no FAQs.
@@ -278,7 +283,7 @@ class Faq_Fields {
 		$sections = '';
 		foreach ( $questions as $question ) {
 			$sections .= sprintf(
-				'<div class="schema-faq-section" id="%1$s"><strong class="schema-faq-question">%2$s</strong> <p class="schema-faq-answer">%3$s</p> </div> ',
+				'<div class="schema-faq-section" id="%1$s"><strong class="schema-faq-question">%2$s</strong> <div class="schema-faq-answer">%3$s</div> </div> ',
 				esc_attr( $question['id'] ),
 				$question['question'],
 				$question['answer']
@@ -333,12 +338,12 @@ class Faq_Fields {
 		/**
 		 * Filters whether the post's FAQ fields are added to the Yoast FAQ schema.
 		 *
-		 * Defaults to true only when the "Post FAQs" block is on the page, because
+		 * Defaults to true only when the "TO FAQs" block is on the page, because
 		 * FAQ structured data should match content that is visible to visitors.
 		 *
 		 * @since 0.1.0
 		 *
-		 * @param bool $on_page Whether the "Post FAQs" block is on the page.
+		 * @param bool $on_page Whether the "TO FAQs" block is on the page.
 		 * @param int  $post_id The post ID.
 		 */
 		if ( ! apply_filters( 'lsx_to_faq_add_schema', $on_page, $post_id ) ) {
@@ -381,41 +386,38 @@ class Faq_Fields {
 			return [];
 		}
 
-		$rows = get_field( self::FIELD_KEY, $post_id );
+		$rows = get_post_meta( $post_id, self::FIELD, true );
 
 		if ( empty( $rows ) || ! is_array( $rows ) ) {
 			return [];
 		}
 
-		$allowed_html = [
-			'a'      => [
-				'href'   => true,
-				'target' => true,
-				'rel'    => true,
-			],
+		// The tags Yoast SEO keeps in FAQ schema answers.
+		$schema_html = [
+			'a'      => [ 'href' => true ],
+			'b'      => [],
 			'br'     => [],
 			'em'     => [],
+			'h1'     => [],
+			'h2'     => [],
+			'h3'     => [],
+			'h4'     => [],
+			'h5'     => [],
+			'h6'     => [],
 			'i'      => [],
+			'li'     => [],
+			'ol'     => [],
+			'p'      => [],
 			'strong' => [],
-			'b'      => [],
+			'ul'     => [],
 		];
-
-		/**
-		 * Filters the image size used for FAQ answer images.
-		 *
-		 * @since 0.1.0
-		 *
-		 * @param string $size    Image size name. Default 'medium_large'.
-		 * @param int    $post_id The post ID.
-		 */
-		$image_size = apply_filters( 'lsx_to_faq_image_size', 'medium_large', $post_id );
 
 		$questions = [];
 		$position  = 0;
 
 		foreach ( $rows as $row ) {
 			$question = isset( $row['question'] ) ? esc_html( trim( (string) $row['question'] ) ) : '';
-			$answer   = isset( $row['answer'] ) ? trim( wp_kses( (string) $row['answer'], $allowed_html ) ) : '';
+			$answer   = isset( $row['answer'] ) ? trim( wp_kses_post( (string) $row['answer'] ) ) : '';
 
 			if ( '' === $question || '' === $answer ) {
 				continue;
@@ -423,21 +425,13 @@ class Faq_Fields {
 
 			++$position;
 
-			$image_html = '';
-			$image_src  = '';
-			if ( ! empty( $row['image'] ) ) {
-				$image_id   = (int) $row['image'];
-				$image_html = wp_get_attachment_image( $image_id, $image_size, false, [ 'class' => 'schema-faq-answer-image' ] );
-				$image_src  = (string) wp_get_attachment_image_url( $image_id, 'full' );
-			}
-
 			$questions[] = [
 				'id'           => 'faq-question-' . $post_id . '-' . $position,
 				'question'     => $question,
-				'answer'       => $image_html ? $answer . '<br />' . $image_html : $answer,
+				'answer'       => $this->format_answer( $answer ),
 				'jsonQuestion' => $question,
-				'jsonAnswer'   => $answer,
-				'jsonImageSrc' => $image_src,
+				'jsonAnswer'   => trim( wp_kses( strip_shortcodes( $answer ), $schema_html ) ),
+				'jsonImageSrc' => $this->get_first_image_src( $answer ),
 				'images'       => [],
 			];
 		}
@@ -451,6 +445,42 @@ class Faq_Fields {
 		 * @param int     $post_id   The post ID.
 		 */
 		return apply_filters( 'lsx_to_faq_questions', $questions, $post_id );
+	}
+
+	/**
+	 * Formats a WYSIWYG answer for display, the way post content is formatted.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param string $answer Answer HTML, already passed through wp_kses_post().
+	 * @return string
+	 */
+	protected function format_answer( $answer ) {
+		$answer = wpautop( $answer );
+		$answer = shortcode_unautop( $answer );
+		$answer = do_shortcode( $answer );
+
+		return wp_filter_content_tags( $answer );
+	}
+
+	/**
+	 * Returns the URL of the first image in an answer, for the FAQ schema.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param string $answer Answer HTML.
+	 * @return string
+	 */
+	protected function get_first_image_src( $answer ) {
+		$tags = new \WP_HTML_Tag_Processor( $answer );
+
+		if ( ! $tags->next_tag( 'img' ) ) {
+			return '';
+		}
+
+		$src = $tags->get_attribute( 'src' );
+
+		return is_string( $src ) ? esc_url_raw( $src ) : '';
 	}
 
 	/**
@@ -538,7 +568,7 @@ class Faq_Fields {
 	}
 
 	/**
-	 * Enqueues the editor script that registers the "Post FAQs" variation.
+	 * Enqueues the editor script that registers the "TO FAQs" variation.
 	 *
 	 * The script adds the variation attribute through the
 	 * `blocks.registerBlockType` filter, so it must load before Yoast

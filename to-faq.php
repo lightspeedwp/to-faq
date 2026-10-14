@@ -2,10 +2,11 @@
 /**
  * Plugin Name:       Tour Operator FAQ
  * Plugin URI:        https://github.com/lightspeedwp/to-faq
- * Description:       FAQs for Tour Operator: a collapsible Yoast FAQ block, repeatable FAQ fields with a "Post FAQs" block variation, and an FAQ template part.
+ * Description:       FAQs for Tour Operator: a collapsible Yoast FAQ block, repeatable FAQ fields with a "TO FAQs" block variation, and an FAQ template part.
  * Version:           0.1.0
- * Requires at least: 6.4
- * Requires PHP:      8.0
+ * Requires at least: 6.7
+ * Requires PHP:      8.2
+ * Requires Plugins:  tour-operator, wordpress-seo
  * Author:            LightSpeed
  * Author URI:        https://lightspeedwp.agency/
  * License:           GPL-3.0-or-later
@@ -39,7 +40,7 @@ function lsx_to_faq_init() {
 	// FAQ pattern and template part (requires Yoast SEO). The faq area is registered by Tour Operator core.
 	new lsx\to_faq\Template_Parts();
 
-	// Repeatable FAQ fields and the "Post FAQs" Yoast FAQ block variation (requires Yoast SEO and SCF).
+	// Repeatable FAQ fields and the "TO FAQs" Yoast FAQ block variation (requires Yoast SEO; the meta box uses Tour Operator's bundled CMB2).
 	if ( lsx\to_faq\Faq_Fields::is_supported() ) {
 		new lsx\to_faq\Faq_Fields();
 	}

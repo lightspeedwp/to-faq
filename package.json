@@ -11,7 +11,7 @@
     "lint": "npm run lint:js && npm run lint:css",
     "lint:js": "wp-scripts lint-js src",
     "lint:css": "wp-scripts lint-style \"src/**/*.{css,scss}\"",
-    "i18n": "wp-scripts makepot",
+    "i18n": "wp i18n make-pot . languages/to-faq.pot --domain=to-faq --exclude=node_modules,vendor,src",
     "packages-update": "wp-scripts packages-update"
   },
   "engines": {

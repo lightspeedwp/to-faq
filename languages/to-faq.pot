@@ -1,0 +1,134 @@
+# Copyright (C) 2026 LightSpeed
+# This file is distributed under the GPL-3.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Tour Operator FAQ 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/to-faq\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-14T13:12:40+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: to-faq\n"
+
+#. Plugin Name of the plugin
+#: to-faq.php
+msgid "Tour Operator FAQ"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: to-faq.php
+msgid "https://github.com/lightspeedwp/to-faq"
+msgstr ""
+
+#. Description of the plugin
+#: to-faq.php
+msgid "FAQs for Tour Operator: a collapsible Yoast FAQ block, repeatable FAQ fields with a \"TO FAQs\" block variation, and an FAQ template part."
+msgstr ""
+
+#. Author of the plugin
+#: to-faq.php
+msgid "LightSpeed"
+msgstr ""
+
+#. Author URI of the plugin
+#: to-faq.php
+msgid "https://lightspeedwp.agency/"
+msgstr ""
+
+#: includes/classes/class-faq-fields.php:172
+msgid "FAQs"
+msgstr ""
+
+#: includes/classes/class-faq-fields.php:184
+msgid "Shown by the \"TO FAQs\" block, and output as FAQ structured data by Yoast SEO."
+msgstr ""
+
+#: includes/classes/class-faq-fields.php:189
+msgid "Question {#}"
+msgstr ""
+
+#: includes/classes/class-faq-fields.php:190
+msgid "Add question"
+msgstr ""
+
+#: includes/classes/class-faq-fields.php:191
+msgid "Remove"
+msgstr ""
+
+#: includes/classes/class-faq-fields.php:201
+msgid "Question"
+msgstr ""
+
+#: includes/classes/class-faq-fields.php:210
+msgid "Answer"
+msgstr ""
+
+#: includes/classes/class-faq-fields.php:211
+msgid "Use Add Media to include an image."
+msgstr ""
+
+#: includes/classes/class-template-parts.php:77
+#: includes/classes/class-template-parts.php:110
+#: patterns/faq.php:54
+msgid "FAQ"
+msgstr ""
+
+#: includes/classes/class-template-parts.php:78
+msgid "A heading followed by a Yoast FAQ block with structured data."
+msgstr ""
+
+#: includes/classes/class-template-parts.php:111
+msgid "Frequently asked questions section using the Yoast FAQ block."
+msgstr ""
+
+#: patterns/faq.php:23
+msgid "What is your first frequently asked question?"
+msgstr ""
+
+#: patterns/faq.php:24
+msgid "Replace this text with the answer to your first question."
+msgstr ""
+
+#: patterns/faq.php:28
+msgid "What is your second frequently asked question?"
+msgstr ""
+
+#: patterns/faq.php:29
+msgid "Replace this text with the answer to your second question."
+msgstr ""
+
+#: patterns/faq.php:33
+msgid "What is your third frequently asked question?"
+msgstr ""
+
+#: patterns/faq.php:34
+msgid "Replace this text with the answer to your third question."
+msgstr ""
+
+#: patterns/faq.php:56
+msgid "Frequently asked questions"
+msgstr ""
+
+#: build/js/faq-fields.js:1
+msgid "TO FAQs"
+msgstr ""
+
+#: build/js/faq-fields.js:1
+msgid "The questions from the post's Tour Operator fields are shown here on the front end. Edit them in the FAQs panel below the post content. If the post has no FAQs, this block is hidden."
+msgstr ""
+
+#: build/js/faq-fields.js:1
+msgid "Shows the questions from this Tour Operator's FAQ fields, with Yoast FAQ structured data. Nothing is shown if the post has no FAQs."
+msgstr ""
+
+#: build/js/faq-fields.js:1
+msgid "faq"
+msgstr ""
+
+#: build/js/faq-fields.js:1
+msgid "questions"
+msgstr ""

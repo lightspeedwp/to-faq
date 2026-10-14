@@ -13,12 +13,12 @@ The Yoast FAQ block becomes an accessible, collapsible accordion.
 - Without JavaScript the FAQ stays fully expanded. Motion is disabled under `prefers-reduced-motion`.
 - The script and stylesheet only load on pages that render the FAQ block.
 
-### Post FAQs
+### TO FAQs
 
-Requires Yoast SEO and Secure Custom Fields.
+Requires Yoast SEO and Tour Operator. The meta box uses the CMB2 library bundled with Tour Operator.
 
-- Tours, accommodation and destinations get a repeatable **FAQs** field group (question, answer, optional image). Change the post types with the `lsx_to_faq_post_types` filter.
-- The **Post FAQs** variation of the Yoast FAQ block shows those fields on the front end. It renders nothing when the post has no FAQs.
+- Posts and the Tour Operator post types (from `lsx_to_get_post_types()`) get an **FAQs** meta box: a repeatable, sortable group of a question and an answer. The answer is a WYSIWYG editor, like the itinerary description, so it supports basic formatting and images through Add Media. Add or remove post types with the `lsx_to_faq_post_types` filter.
+- The **TO FAQs** variation of the Yoast FAQ block shows those fields on the front end. It renders nothing when the post has no FAQs.
 - The questions are passed into Yoast SEO's FAQ schema, so Yoast outputs the structured data. This only happens when the block is on the page (in the content, a template, or a template part). Override it with `lsx_to_faq_add_schema`.
 
 ### FAQ pattern and template part
@@ -30,6 +30,12 @@ Requires Yoast SEO.
 
 The `faq` template part area is registered by the Tour Operator core plugin, not here.
 
+## Requirements
+
+- [Tour Operator](https://wordpress.org/plugins/tour-operator/), declared with the `Requires Plugins` header. It provides the CMB2 library used by the FAQs meta box.
+- [Yoast SEO](https://wordpress.org/plugins/wordpress-seo/), also declared with `Requires Plugins`. It provides the FAQ block that every feature builds on.
+- WordPress 6.7 and PHP 8.2, matching Tour Operator. WordPress enforces `Requires Plugins` from 6.5.
+
 ## Development
 
 ```bash
@@ -37,7 +43,10 @@ npm ci
 npm run build   # compile src/ to build/
 npm start       # watch mode
 npm run lint
+npm run i18n    # regenerate languages/to-faq.pot
 ```
+
+`npm run i18n` runs `wp i18n make-pot`, so it needs [WP-CLI](https://wp-cli.org/) with the `wp` command on your `PATH`.
 
 | Source | Build output |
 | --- | --- |
