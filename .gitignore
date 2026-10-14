@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build output
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Archives
+*.zip
+*.tar.gz
+*.tgz
+
+# PHP
+.php-cs-fixer.cache
+.phpunit.cache/
+.phpunit.result.cache
+
+# Node
+.npm/
+.eslintcache
+.stylelintcache
+
+# Temp
+tmp/
+temp/
+
+# AI / local cache
+.cache/
+.ai-cache/
+
+# Lock files
+# package-lock.json is committed to lock Node dependencies.
+# composer.lock is NOT committed — this is a plugin, not a deployment artefact.
+composer.lock
