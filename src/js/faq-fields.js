@@ -45,7 +45,7 @@ addFilter(
  * Register Post FAQs as a yoast/faq-block variation
  */
 registerBlockVariation( BLOCK_NAME, {
-	name: 'lsx-to-post-faqs',
+	name: 'lsx-tour-operator/faqs',
 	title: __( 'TO FAQs', 'to-faq' ),
 	icon: 'editor-help',
 	description: __(
