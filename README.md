@@ -15,7 +15,7 @@ The Yoast FAQ block becomes an accessible, collapsible accordion.
 
 ### TO FAQs
 
-Requires Yoast SEO. The meta box uses the CMB2 library bundled with Tour Operator.
+Requires Yoast SEO and Tour Operator. The meta box uses the CMB2 library bundled with Tour Operator.
 
 - Posts and the Tour Operator post types (from `lsx_to_get_post_types()`) get an **FAQs** meta box: a repeatable, sortable group of a question and an answer. The answer is a WYSIWYG editor, like the itinerary description, so it supports basic formatting and images through Add Media. Add or remove post types with the `lsx_to_faq_post_types` filter.
 - The **TO FAQs** variation of the Yoast FAQ block shows those fields on the front end. It renders nothing when the post has no FAQs.

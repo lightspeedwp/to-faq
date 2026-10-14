@@ -6,6 +6,7 @@
  * Version:           0.1.0
  * Requires at least: 6.4
  * Requires PHP:      8.0
+ * Requires Plugins:  tour-operator
  * Author:            LightSpeed
  * Author URI:        https://lightspeedwp.agency/
  * License:           GPL-3.0-or-later

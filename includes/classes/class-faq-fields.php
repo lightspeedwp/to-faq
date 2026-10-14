@@ -12,9 +12,9 @@
  * context. That way Yoast keeps generating and maintaining the structured
  * data, and this class only supplies the questions.
  *
- * Requires Yoast SEO (for the FAQ block and schema). The meta box uses the
- * CMB2 library bundled with Tour Operator, registered the same way as the
- * Tour Operator meta boxes.
+ * Requires Yoast SEO (for the FAQ block and schema) and Tour Operator. The
+ * meta box uses the CMB2 library bundled with Tour Operator, registered the
+ * same way as the Tour Operator meta boxes.
  *
  * @package TO_FAQ
  * @since   0.1.0
@@ -155,6 +155,11 @@ class Faq_Fields {
 	 * @return void
 	 */
 	public function register_fields() {
+		// CMB2 is bundled with Tour Operator, so it may not be loaded.
+		if ( ! function_exists( 'new_cmb2_box' ) ) {
+			return;
+		}
+
 		$post_types = $this->get_post_types();
 
 		if ( empty( $post_types ) ) {
