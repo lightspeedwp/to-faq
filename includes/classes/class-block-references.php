@@ -53,7 +53,9 @@ class Block_References {
 	 * Inner blocks are searched, and so is the content of any template part,
 	 * pattern or synced pattern a block references. With `$include_direct`
 	 * false, only blocks reached through a reference are returned, which skips
-	 * the blocks Yoast SEO already collects from post content.
+	 * the blocks Yoast SEO already collects from post content. A reference that
+	 * is already on the current recursion path is skipped, so a part, pattern or
+	 * synced pattern that includes itself is not loaded and parsed again.
 	 *
 	 * @since 0.1.0
 	 *
@@ -61,9 +63,10 @@ class Block_References {
 	 * @param callable $matches        Receives a parsed block and returns whether it matches.
 	 * @param bool     $include_direct Whether to return matches outside referenced content.
 	 * @param int      $depth          Current nesting depth of referenced content.
+	 * @param bool[]   $visited        Keys of the references on the current recursion path.
 	 * @return array[] Matching parsed blocks.
 	 */
-	public static function find( $blocks, callable $matches, $include_direct = true, $depth = 0 ) {
+	public static function find( $blocks, callable $matches, $include_direct = true, $depth = 0, $visited = [] ) {
 		if ( $depth > self::MAX_DEPTH ) {
 			return [];
 		}
@@ -79,17 +82,52 @@ class Block_References {
 				$found[] = $block;
 			}
 
-			$referenced = self::get_referenced_content( $block );
-			if ( '' !== $referenced ) {
-				$found = array_merge( $found, self::find( parse_blocks( $referenced ), $matches, true, $depth + 1 ) );
+			$key = self::get_reference_key( $block );
+			if ( '' !== $key && ! isset( $visited[ $key ] ) ) {
+				$referenced = self::get_referenced_content( $block );
+				if ( '' !== $referenced ) {
+					$found = array_merge(
+						$found,
+						self::find( parse_blocks( $referenced ), $matches, true, $depth + 1, $visited + [ $key => true ] )
+					);
+				}
 			}
 
 			if ( ! empty( $block['innerBlocks'] ) ) {
-				$found = array_merge( $found, self::find( $block['innerBlocks'], $matches, $include_direct, $depth ) );
+				$found = array_merge( $found, self::find( $block['innerBlocks'], $matches, $include_direct, $depth, $visited ) );
 			}
 		}
 
 		return $found;
+	}
+
+	/**
+	 * Returns a stable key for the template part, pattern or synced pattern a
+	 * block references.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param array $block Parsed block.
+	 * @return string Reference key, or an empty string when the block references nothing.
+	 */
+	public static function get_reference_key( $block ) {
+		$name  = $block['blockName'] ?? '';
+		$attrs = $block['attrs'] ?? [];
+
+		if ( 'core/template-part' === $name && ! empty( $attrs['slug'] ) ) {
+			$theme = ! empty( $attrs['theme'] ) ? $attrs['theme'] : get_stylesheet();
+			return 'wp_template_part:' . $theme . '//' . $attrs['slug'];
+		}
+
+		if ( 'core/pattern' === $name && ! empty( $attrs['slug'] ) ) {
+			return 'pattern:' . $attrs['slug'];
+		}
+
+		if ( 'core/block' === $name && ! empty( $attrs['ref'] ) ) {
+			return 'wp_block:' . (int) $attrs['ref'];
+		}
+
+		return '';
 	}
 
 	/**
