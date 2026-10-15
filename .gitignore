@@ -51,3 +51,7 @@ temp/
 # package-lock.json is committed to lock Node dependencies.
 # composer.lock is NOT committed — this is a plugin, not a deployment artefact.
 composer.lock
+# Playwright
+test-results/
+playwright-report/
+blob-report/
