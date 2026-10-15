@@ -28,8 +28,10 @@ define( 'LSX_TO_FAQ_PATH', plugin_dir_path( __FILE__ ) );
 define( 'LSX_TO_FAQ_URL', plugin_dir_url( __FILE__ ) );
 
 require_once LSX_TO_FAQ_PATH . 'includes/classes/class-faq.php';
+require_once LSX_TO_FAQ_PATH . 'includes/classes/class-block-references.php';
 require_once LSX_TO_FAQ_PATH . 'includes/classes/class-template-parts.php';
 require_once LSX_TO_FAQ_PATH . 'includes/classes/class-faq-fields.php';
+require_once LSX_TO_FAQ_PATH . 'includes/classes/class-template-faq-schema.php';
 
 new lsx\to_faq\Faq();
 
@@ -40,9 +42,12 @@ function lsx_to_faq_init() {
 	// FAQ pattern and template part (requires Yoast SEO). The faq area is registered by Tour Operator core.
 	new lsx\to_faq\Template_Parts();
 
-	// Repeatable FAQ fields and the "TO FAQs" Yoast FAQ block variation (requires Yoast SEO; the meta box uses Tour Operator's bundled CMB2).
 	if ( lsx\to_faq\Faq_Fields::is_supported() ) {
+		// Repeatable FAQ fields and the "TO FAQs" Yoast FAQ block variation (requires Yoast SEO; the meta box uses Tour Operator's bundled CMB2).
 		new lsx\to_faq\Faq_Fields();
+
+		// Yoast FAQ blocks in templates and template parts, added to Yoast's FAQ schema (requires Yoast SEO).
+		new lsx\to_faq\Template_Faq_Schema();
 	}
 }
 add_action( 'plugins_loaded', 'lsx_to_faq_init' );
