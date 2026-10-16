@@ -29,6 +29,7 @@ define( 'LSX_TO_FAQ_URL', plugin_dir_url( __FILE__ ) );
 
 require_once LSX_TO_FAQ_PATH . 'includes/classes/class-faq.php';
 require_once LSX_TO_FAQ_PATH . 'includes/classes/class-block-references.php';
+require_once LSX_TO_FAQ_PATH . 'includes/classes/class-rendered-blocks.php';
 require_once LSX_TO_FAQ_PATH . 'includes/classes/class-template-parts.php';
 require_once LSX_TO_FAQ_PATH . 'includes/classes/class-faq-fields.php';
 require_once LSX_TO_FAQ_PATH . 'includes/classes/class-template-faq-schema.php';
@@ -48,6 +49,9 @@ function lsx_to_faq_init() {
 
 		// Yoast FAQ blocks in templates and template parts, added to Yoast's FAQ schema (requires Yoast SEO).
 		new lsx\to_faq\Template_Faq_Schema();
+
+		// Tracks which FAQ blocks render visibly, so hidden ones stay out of the schema.
+		lsx\to_faq\Rendered_Blocks::init();
 	}
 }
 add_action( 'plugins_loaded', 'lsx_to_faq_init' );

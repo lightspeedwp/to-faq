@@ -30,7 +30,7 @@ Yoast builds its FAQ schema only from the Yoast FAQ blocks written in a post's o
 - a template part, pattern or synced pattern inserted in the content, or
 - the block template, including its template parts.
 
-The blocks are passed into Yoast's schema context, so Yoast still outputs the structured data and it matches the visible FAQs. Questions already in the schema are skipped, so a part placed twice is only counted once. Archives aren't affected, because Yoast doesn't output FAQ schema there. Turn it off with the `lsx_to_faq_add_template_schema` filter.
+The blocks are passed into Yoast's schema context, so Yoast still outputs the structured data and it matches the visible FAQs. Questions already in the schema are skipped, so a part placed twice is only counted once. FAQ blocks hidden when the page renders, for example by a Block Visibility rule on the block or a parent group, are left out of the schema, and so is a hidden **TO FAQs** block. Archives aren't affected, because Yoast doesn't output FAQ schema there. Turn it off with the `lsx_to_faq_add_template_schema` filter.
 
 ### FAQ pattern and template part
 

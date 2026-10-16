@@ -79,11 +79,13 @@ class Template_Faq_Schema {
 			return $pieces;
 		}
 
+		// Blocks hidden when the page rendered, for example by a visibility rule, are left out.
 		$is_static_faq = function ( $block ) {
 			return self::BLOCK === $block['blockName']
 				&& empty( $block['attrs'][ Faq_Fields::ATTRIBUTE ] )
 				&& ! empty( $block['attrs']['questions'] )
-				&& is_array( $block['attrs']['questions'] );
+				&& is_array( $block['attrs']['questions'] )
+				&& Rendered_Blocks::is_visible( $block );
 		};
 
 		// The template's blocks never reach Yoast; in post content only referenced blocks are missing.

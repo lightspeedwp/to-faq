@@ -480,7 +480,8 @@ class Faq_Fields {
 	 * Checks whether the current block template includes the variation.
 	 *
 	 * Looks through the resolved template, including any template parts,
-	 * patterns, and synced patterns it references.
+	 * patterns, and synced patterns it references. A variation hidden when
+	 * the page rendered, for example by a visibility rule, does not count.
 	 *
 	 * @since 0.1.0
 	 * @return bool
@@ -489,7 +490,9 @@ class Faq_Fields {
 		$variations = Block_References::find(
 			Block_References::current_template_blocks(),
 			function ( $block ) {
-				return self::BLOCK === $block['blockName'] && ! empty( $block['attrs'][ self::ATTRIBUTE ] );
+				return self::BLOCK === $block['blockName']
+					&& ! empty( $block['attrs'][ self::ATTRIBUTE ] )
+					&& Rendered_Blocks::is_visible( $block );
 			}
 		);
 
