@@ -21,6 +21,17 @@ Requires Yoast SEO and Tour Operator. The meta box uses the CMB2 library bundled
 - The **TO FAQs** variation of the Yoast FAQ block shows those fields on the front end. It renders nothing when the post has no FAQs.
 - The questions are passed into Yoast SEO's FAQ schema, so Yoast outputs the structured data. This only happens when the block is on the page (in the content, a template, or a template part). Override it with `lsx_to_faq_add_schema`.
 
+### FAQ schema for templates and template parts
+
+Requires Yoast SEO.
+
+Yoast builds its FAQ schema only from the Yoast FAQ blocks written in a post's own content. This plugin adds the Yoast FAQ blocks that reach a singular page another way:
+
+- a template part, pattern or synced pattern inserted in the content, or
+- the block template, including its template parts.
+
+The blocks are passed into Yoast's schema context, so Yoast still outputs the structured data and it matches the visible FAQs. Questions already in the schema are skipped, so a part placed twice is only counted once. FAQ blocks hidden when the page renders, for example by a Block Visibility rule on the block or a parent group, are left out of the schema, and so is a hidden **TO FAQs** block. Archives aren't affected, because Yoast doesn't output FAQ schema there. Turn it off with the `lsx_to_faq_add_template_schema` filter.
+
 ### FAQ pattern and template part
 
 Requires Yoast SEO.

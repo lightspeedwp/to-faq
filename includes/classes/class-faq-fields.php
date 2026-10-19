@@ -76,13 +76,6 @@ class Faq_Fields {
 	const YOAST_SCRIPT = 'yoast-seo-faq-block';
 
 	/**
-	 * Maximum nesting depth when looking for the variation in templates.
-	 *
-	 * @var int
-	 */
-	const MAX_DEPTH = 5;
-
-	/**
 	 * Constructor.
 	 *
 	 * @since 0.1.0
@@ -487,84 +480,23 @@ class Faq_Fields {
 	 * Checks whether the current block template includes the variation.
 	 *
 	 * Looks through the resolved template, including any template parts,
-	 * patterns, and synced patterns it references.
+	 * patterns, and synced patterns it references. A variation hidden when
+	 * the page rendered, for example by a visibility rule, does not count.
 	 *
 	 * @since 0.1.0
 	 * @return bool
 	 */
 	protected function template_has_variation() {
-		global $_wp_current_template_content;
-
-		if ( empty( $_wp_current_template_content ) ) {
-			return false;
-		}
-
-		return $this->blocks_have_variation( parse_blocks( $_wp_current_template_content ), 0 );
-	}
-
-	/**
-	 * Recursively checks parsed blocks for the variation.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param array $blocks Parsed blocks.
-	 * @param int   $depth  Current nesting depth of referenced content.
-	 * @return bool
-	 */
-	protected function blocks_have_variation( $blocks, $depth ) {
-		if ( $depth > self::MAX_DEPTH ) {
-			return false;
-		}
-
-		foreach ( $blocks as $block ) {
-			$name = $block['blockName'] ?? '';
-
-			if ( self::BLOCK === $name && ! empty( $block['attrs'][ self::ATTRIBUTE ] ) ) {
-				return true;
+		$variations = Block_References::find(
+			Block_References::current_template_blocks(),
+			function ( $block ) {
+				return self::BLOCK === $block['blockName']
+					&& ! empty( $block['attrs'][ self::ATTRIBUTE ] )
+					&& Rendered_Blocks::is_visible( $block );
 			}
+		);
 
-			$referenced = $this->get_referenced_content( $block );
-			if ( '' !== $referenced && $this->blocks_have_variation( parse_blocks( $referenced ), $depth + 1 ) ) {
-				return true;
-			}
-
-			if ( ! empty( $block['innerBlocks'] ) && $this->blocks_have_variation( $block['innerBlocks'], $depth ) ) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Returns the content of a template part, pattern, or synced pattern block.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param array $block Parsed block.
-	 * @return string
-	 */
-	protected function get_referenced_content( $block ) {
-		$name  = $block['blockName'] ?? '';
-		$attrs = $block['attrs'] ?? [];
-
-		if ( 'core/template-part' === $name && ! empty( $attrs['slug'] ) ) {
-			$theme = ! empty( $attrs['theme'] ) ? $attrs['theme'] : get_stylesheet();
-			$part  = get_block_template( $theme . '//' . $attrs['slug'], 'wp_template_part' );
-			return $part && ! empty( $part->content ) ? $part->content : '';
-		}
-
-		if ( 'core/pattern' === $name && ! empty( $attrs['slug'] ) ) {
-			$pattern = \WP_Block_Patterns_Registry::get_instance()->get_registered( $attrs['slug'] );
-			return $pattern && ! empty( $pattern['content'] ) ? $pattern['content'] : '';
-		}
-
-		if ( 'core/block' === $name && ! empty( $attrs['ref'] ) ) {
-			$synced = get_post( (int) $attrs['ref'] );
-			return $synced && 'wp_block' === $synced->post_type ? $synced->post_content : '';
-		}
-
-		return '';
+		return ! empty( $variations );
 	}
 
 	/**
