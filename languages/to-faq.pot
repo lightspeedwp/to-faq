@@ -39,35 +39,36 @@ msgstr ""
 msgid "https://lightspeedwp.agency/"
 msgstr ""
 
-#: includes/classes/class-faq-fields.php:172
+#: includes/classes/class-faq-fields.php:198
+#: includes/classes/class-faq-fields.php:215
 msgid "FAQs"
 msgstr ""
 
-#: includes/classes/class-faq-fields.php:184
+#: includes/classes/class-faq-fields.php:239
 msgid "Shown by the \"TO FAQs\" block, and output as FAQ structured data by Yoast SEO."
 msgstr ""
 
-#: includes/classes/class-faq-fields.php:189
+#: includes/classes/class-faq-fields.php:244
 msgid "Question {#}"
 msgstr ""
 
-#: includes/classes/class-faq-fields.php:190
+#: includes/classes/class-faq-fields.php:245
 msgid "Add question"
 msgstr ""
 
-#: includes/classes/class-faq-fields.php:191
+#: includes/classes/class-faq-fields.php:246
 msgid "Remove"
 msgstr ""
 
-#: includes/classes/class-faq-fields.php:201
+#: includes/classes/class-faq-fields.php:256
 msgid "Question"
 msgstr ""
 
-#: includes/classes/class-faq-fields.php:210
+#: includes/classes/class-faq-fields.php:265
 msgid "Answer"
 msgstr ""
 
-#: includes/classes/class-faq-fields.php:211
+#: includes/classes/class-faq-fields.php:266
 msgid "Use Add Media to include an image."
 msgstr ""
 
@@ -118,11 +119,11 @@ msgid "TO FAQs"
 msgstr ""
 
 #: build/js/faq-fields.js:1
-msgid "The questions from the post's Tour Operator fields are shown here on the front end. Edit them in the FAQs panel below the post content. If the post has no FAQs, this block is hidden."
+msgid "The questions from the post's Tour Operator fields are shown here on the front end. Edit them in the FAQs panel below the post content. In a taxonomy archive template, outside a Query Loop, the term's FAQs are shown instead; edit them on the Edit term screen. If there are no FAQs, this block is hidden."
 msgstr ""
 
 #: build/js/faq-fields.js:1
-msgid "Shows the questions from this Tour Operator's FAQ fields, with Yoast FAQ structured data. Nothing is shown if the post has no FAQs."
+msgid "Shows the questions from this Tour Operator's FAQ fields, or the term's FAQ fields on a taxonomy archive, with Yoast FAQ structured data. Nothing is shown if there are no FAQs."
 msgstr ""
 
 #: build/js/faq-fields.js:1

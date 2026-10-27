@@ -31,7 +31,7 @@ export async function visibleQuestions( page: Page ): Promise< string[] > {
 }
 
 export interface FaqSchema {
-	/** The WebPage node's types, e.g. [ 'WebPage', 'FAQPage' ]. */
+	/** The page node's types, e.g. [ 'WebPage', 'FAQPage' ] or [ 'CollectionPage', 'FAQPage' ] on an archive. */
 	pageTypes: string[];
 	/** The Question names in schema order, normalised. */
 	questions: string[];
@@ -50,7 +50,10 @@ export async function readFaqSchema( page: Page ): Promise< FaqSchema > {
 	const typesOf = ( node: Record< string, unknown > ): string[] =>
 		Array.isArray( node[ '@type' ] ) ? ( node[ '@type' ] as string[] ) : [ String( node[ '@type' ] ) ];
 
-	const webPage = graph.find( ( node ) => typesOf( node ).includes( 'WebPage' ) );
+	// Yoast types archives as CollectionPage instead of WebPage.
+	const webPage = graph.find( ( node ) =>
+		typesOf( node ).some( ( type ) => type === 'WebPage' || type === 'CollectionPage' )
+	);
 
 	return {
 		pageTypes: webPage ? typesOf( webPage ) : [],

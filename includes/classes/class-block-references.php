@@ -56,6 +56,8 @@ class Block_References {
 	 * the blocks Yoast SEO already collects from post content. A reference that
 	 * is already on the current recursion path is skipped, so a part, pattern or
 	 * synced pattern that includes itself is not loaded and parsed again.
+	 * A block `$skip` returns true for is ignored with everything inside it,
+	 * including the content it references.
 	 *
 	 * @since 0.1.0
 	 *
@@ -64,9 +66,10 @@ class Block_References {
 	 * @param bool     $include_direct Whether to return matches outside referenced content.
 	 * @param int      $depth          Current nesting depth of referenced content.
 	 * @param bool[]   $visited        Keys of the references on the current recursion path.
+	 * @param callable $skip           Optional. Receives a parsed block and returns whether to ignore it.
 	 * @return array[] Matching parsed blocks.
 	 */
-	public static function find( $blocks, callable $matches, $include_direct = true, $depth = 0, $visited = [] ) {
+	public static function find( $blocks, callable $matches, $include_direct = true, $depth = 0, $visited = [], ?callable $skip = null ) {
 		if ( $depth > self::MAX_DEPTH ) {
 			return [];
 		}
@@ -74,7 +77,7 @@ class Block_References {
 		$found = [];
 
 		foreach ( $blocks as $block ) {
-			if ( empty( $block['blockName'] ) ) {
+			if ( empty( $block['blockName'] ) || ( $skip && $skip( $block ) ) ) {
 				continue;
 			}
 
@@ -88,13 +91,13 @@ class Block_References {
 				if ( '' !== $referenced ) {
 					$found = array_merge(
 						$found,
-						self::find( parse_blocks( $referenced ), $matches, true, $depth + 1, $visited + [ $key => true ] )
+						self::find( parse_blocks( $referenced ), $matches, true, $depth + 1, $visited + [ $key => true ], $skip )
 					);
 				}
 			}
 
 			if ( ! empty( $block['innerBlocks'] ) ) {
-				$found = array_merge( $found, self::find( $block['innerBlocks'], $matches, $include_direct, $depth, $visited ) );
+				$found = array_merge( $found, self::find( $block['innerBlocks'], $matches, $include_direct, $depth, $visited, $skip ) );
 			}
 		}
 

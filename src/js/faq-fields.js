@@ -1,8 +1,9 @@
 /**
  * Post FAQs Variation for yoast/faq-block
  * Registers a "Post FAQs" variation of the Yoast FAQ block. On the front end
- * it is filled from the post's FAQ fields (see includes/classes/class-faq-fields.php), so
- * the editor shows a placeholder instead of Yoast's question editor.
+ * it is filled from the post's FAQ fields, or on a taxonomy archive from the
+ * term's FAQ fields (see includes/classes/class-faq-fields.php), so the editor
+ * shows a placeholder instead of Yoast's question editor.
  *
  * This script is a dependency of Yoast's FAQ block script, so the attribute
  * filter below runs before Yoast registers the block.
@@ -49,7 +50,7 @@ registerBlockVariation( BLOCK_NAME, {
 	title: __( 'TO FAQs', 'to-faq' ),
 	icon: 'editor-help',
 	description: __(
-		"Shows the questions from this Tour Operator's FAQ fields, with Yoast FAQ structured data. Nothing is shown if the post has no FAQs.",
+		"Shows the questions from this Tour Operator's FAQ fields, or the term's FAQ fields on a taxonomy archive, with Yoast FAQ structured data. Nothing is shown if there are no FAQs.",
 		'to-faq'
 	),
 	keywords: [ __( 'faq', 'to-faq' ), __( 'questions', 'to-faq' ) ],
@@ -72,7 +73,7 @@ function PostFaqsPlaceholder() {
 				icon="editor-help"
 				label={ __( 'TO FAQs', 'to-faq' ) }
 				instructions={ __(
-					"The questions from the post's Tour Operator fields are shown here on the front end. Edit them in the FAQs panel below the post content. If the post has no FAQs, this block is hidden.",
+					"The questions from the post's Tour Operator fields are shown here on the front end. Edit them in the FAQs panel below the post content. In a taxonomy archive template, outside a Query Loop, the term's FAQs are shown instead; edit them on the Edit term screen. If there are no FAQs, this block is hidden.",
 					'to-faq'
 				) }
 			/>
