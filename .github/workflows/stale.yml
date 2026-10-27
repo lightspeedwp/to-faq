@@ -5,22 +5,27 @@ on:
   schedule:
   - cron: "30 1 * * *"
 
-# The org default token is read-only; actions/stale labels, comments on and
-# closes issues and pull requests.
-permissions:
-  issues: write
-  pull-requests: write
+# No permissions at the workflow level; the job below asks for what it needs.
+permissions: {}
 
 jobs:
   stale:
 
     runs-on: ubuntu-latest
 
+    # The org default token is read-only. actions/stale labels, comments on
+    # and closes issues and pull requests, and keeps its progress between
+    # runs in the Actions cache when a run hits its operations limit.
+    permissions:
+      actions: write
+      issues: write
+      pull-requests: write
+
     steps:
     - uses: actions/stale@v11
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        stale-issue-message: 'Stale issue message'
-        stale-pr-message: 'Stale pull request message'
+        stale-issue-message: 'This issue has had no activity for 60 days, so it has been marked stale. It will be closed in 7 days unless there is new activity, such as a comment, or the stale label is removed.'
+        stale-pr-message: 'This pull request has had no activity for 60 days, so it has been marked stale. It will be closed in 7 days unless there is new activity, such as a comment or a push, or the stale label is removed.'
         stale-issue-label: 'no-issue-activity'
         stale-pr-label: 'no-pr-activity'
