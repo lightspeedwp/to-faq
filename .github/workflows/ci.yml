@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+# GitHub cancels superseded runs natively per ref.
+# github.ref is unique per pull request (refs/pull/N/merge). github.head_ref
+# is only the branch name, so two fork PRs sharing a branch name would land in
+# the same group and cancel each other's checks.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and lint assets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build assets
+        run: npm run build
+
+      - name: Lint scripts
+        run: npm run lint:js
+
+      - name: Lint styles
+        run: npm run lint:css
+
+      # Guards against the plugin header, readme Stable tag, version constant
+      # and package.json drifting apart.
+      - name: Check version sources agree
+        run: npm run lint:version
