@@ -85,6 +85,14 @@ class Faq_Fields {
 	const YOAST_SCRIPT = 'yoast-seo-faq-block';
 
 	/**
+	 * How many core/post-template blocks are rendering, so blocks in a Query
+	 * Loop's items can be recognised.
+	 *
+	 * @var int
+	 */
+	protected $post_template_depth = 0;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 0.1.0
@@ -93,6 +101,8 @@ class Faq_Fields {
 		add_action( 'cmb2_admin_init', [ $this, 'register_fields' ], 100 );
 		add_filter( 'register_block_type_args', [ $this, 'extend_block_type' ], 10, 2 );
 		add_filter( 'render_block_' . self::BLOCK, [ $this, 'render_block' ], 10, 3 );
+		add_filter( 'render_block_data', [ $this, 'enter_post_template' ] );
+		add_filter( 'render_block_core/post-template', [ $this, 'leave_post_template' ] );
 		add_filter( 'wpseo_schema_graph_pieces', [ $this, 'add_questions_to_schema' ], 10, 2 );
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_assets' ], 5 );
 	}
@@ -309,8 +319,11 @@ class Faq_Fields {
 	 *
 	 * The `postId` context can't tell the two apart: core's render_block()
 	 * gives every top-level block the global post, which on an archive is the
-	 * first post in the main query. The `query` context, which only core/query
-	 * provides, is used instead.
+	 * first post in the main query. Instead, a block counts as inside a Query
+	 * Loop when it has the `query` context, which only core/query provides, or
+	 * renders inside core/post-template. Post Template renders each item as a
+	 * new block with only `postId` and `postType`, so its items don't get the
+	 * `query` context.
 	 *
 	 * @since 0.1.0
 	 *
@@ -330,6 +343,7 @@ class Faq_Fields {
 			$post_id       = (int) ( $instance->context['postId'] ?? 0 );
 			$in_query_loop = isset( $instance->context['query'] );
 		}
+		$in_query_loop = $in_query_loop || $this->post_template_depth > 0;
 
 		if ( ! $in_query_loop && $this->is_faq_term_archive() ) {
 			$questions = $this->get_term_questions( get_queried_object_id() );
@@ -361,6 +375,36 @@ class Faq_Fields {
 			esc_attr( implode( ' ', $classes ) ),
 			$sections
 		);
+	}
+
+	/**
+	 * Counts a core/post-template block that is about to render.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param array $parsed_block Parsed block.
+	 * @return array Unchanged parsed block.
+	 */
+	public function enter_post_template( $parsed_block ) {
+		if ( 'core/post-template' === ( $parsed_block['blockName'] ?? '' ) ) {
+			++$this->post_template_depth;
+		}
+
+		return $parsed_block;
+	}
+
+	/**
+	 * Counts a core/post-template block that has finished rendering.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param string $block_content Rendered block content.
+	 * @return string Unchanged block content.
+	 */
+	public function leave_post_template( $block_content ) {
+		$this->post_template_depth = max( 0, $this->post_template_depth - 1 );
+
+		return $block_content;
 	}
 
 	/**
