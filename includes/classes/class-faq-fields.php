@@ -291,8 +291,9 @@ class Faq_Fields {
 			'default' => false,
 		];
 
+		// `query` is only provided by core/query, so it marks a block inside a Query Loop.
 		$args['uses_context'] = array_values(
-			array_unique( array_merge( $args['uses_context'] ?? [], [ 'postId', 'postType' ] ) )
+			array_unique( array_merge( $args['uses_context'] ?? [], [ 'postId', 'postType', 'query' ] ) )
 		);
 
 		return $args;
@@ -302,9 +303,14 @@ class Faq_Fields {
 	 * Renders the "TO FAQs" variation from the post's or term's FAQ fields.
 	 *
 	 * Standard Yoast FAQ blocks are returned unchanged. On an archive of one
-	 * of the FAQ taxonomies, a variation without post context (outside a Query
-	 * Loop) shows the queried term's FAQs. The variation renders nothing when
-	 * the post or term has no FAQs.
+	 * of the FAQ taxonomies, a variation outside a Query Loop shows the
+	 * queried term's FAQs. The variation renders nothing when the post or
+	 * term has no FAQs.
+	 *
+	 * The `postId` context can't tell the two apart: core's render_block()
+	 * gives every top-level block the global post, which on an archive is the
+	 * first post in the main query. The `query` context, which only core/query
+	 * provides, is used instead.
 	 *
 	 * @since 0.1.0
 	 *
@@ -318,12 +324,14 @@ class Faq_Fields {
 			return $block_content;
 		}
 
-		$post_id = 0;
-		if ( $instance instanceof \WP_Block && ! empty( $instance->context['postId'] ) ) {
-			$post_id = (int) $instance->context['postId'];
+		$post_id       = 0;
+		$in_query_loop = false;
+		if ( $instance instanceof \WP_Block ) {
+			$post_id       = (int) ( $instance->context['postId'] ?? 0 );
+			$in_query_loop = isset( $instance->context['query'] );
 		}
 
-		if ( ! $post_id && $this->is_faq_term_archive() ) {
+		if ( ! $in_query_loop && $this->is_faq_term_archive() ) {
 			$questions = $this->get_term_questions( get_queried_object_id() );
 		} else {
 			$questions = $this->get_questions( $post_id ? $post_id : (int) get_the_ID() );
