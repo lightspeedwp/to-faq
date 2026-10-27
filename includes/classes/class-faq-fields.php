@@ -676,52 +676,33 @@ class Faq_Fields {
 	 * @since 0.1.0
 	 *
 	 * @param bool $outside_query_loops Whether to skip Query Loops, whose
-	 *                                  variations show each post's FAQs.
+	 *                                  variations show each post's FAQs, including
+	 *                                  Query Loops inside referenced content.
 	 * @return bool
 	 */
 	protected function template_has_variation( $outside_query_loops = false ) {
-		$blocks = Block_References::current_template_blocks();
+		$skip = null;
 
 		if ( $outside_query_loops ) {
-			$blocks = $this->remove_query_loops( $blocks );
+			$skip = function ( $block ) {
+				return 'core/query' === $block['blockName'];
+			};
 		}
 
 		$variations = Block_References::find(
-			$blocks,
+			Block_References::current_template_blocks(),
 			function ( $block ) {
 				return self::BLOCK === $block['blockName']
 					&& ! empty( $block['attrs'][ self::ATTRIBUTE ] )
 					&& Rendered_Blocks::is_visible( $block );
-			}
+			},
+			true,
+			0,
+			[],
+			$skip
 		);
 
 		return ! empty( $variations );
-	}
-
-	/**
-	 * Removes Query Loop blocks, and everything inside them, from a list of blocks.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param array[] $blocks Parsed blocks.
-	 * @return array[]
-	 */
-	protected function remove_query_loops( $blocks ) {
-		$kept = [];
-
-		foreach ( $blocks as $block ) {
-			if ( 'core/query' === ( $block['blockName'] ?? '' ) ) {
-				continue;
-			}
-
-			if ( ! empty( $block['innerBlocks'] ) ) {
-				$block['innerBlocks'] = $this->remove_query_loops( $block['innerBlocks'] );
-			}
-
-			$kept[] = $block;
-		}
-
-		return $kept;
 	}
 
 	/**
