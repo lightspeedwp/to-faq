@@ -73,7 +73,7 @@ class Rendered_Blocks {
 	protected static $rendered = false;
 
 	/**
-	 * Registers the hook that starts tracking on singular front-end requests.
+	 * Registers the hook that starts tracking on singular and taxonomy archive requests.
 	 *
 	 * @since 0.1.0
 	 * @return void
@@ -94,7 +94,7 @@ class Rendered_Blocks {
 	 * @return void
 	 */
 	public static function start() {
-		if ( ! is_singular() ) {
+		if ( ! is_singular() && ! is_tax() ) {
 			return;
 		}
 
