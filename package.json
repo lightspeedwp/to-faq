@@ -21,7 +21,7 @@
     "node": ">=20.0.0"
   },
   "devDependencies": {
-    "@playwright/test": "1.64.0",
+    "@playwright/test": "1.64.1",
     "@wordpress/scripts": "^37.0.0",
     "webpack-remove-empty-scripts": "^1.0.0"
   },
