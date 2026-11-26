@@ -18,7 +18,7 @@
     "lint:version": "node scripts/check-version-sync.mjs"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.22.2"
   },
   "devDependencies": {
     "@playwright/test": "1.64.0",
@@ -27,5 +27,13 @@
   },
   "overrides": {
     "typescript": "~6.0.2"
+  },
+  "dependencies": {
+    "@wordpress/block-editor": "^20.1.0",
+    "@wordpress/blocks": "^17.2.0",
+    "@wordpress/components": "^45.0.0",
+    "@wordpress/compose": "^9.2.0",
+    "@wordpress/hooks": "^5.2.0",
+    "@wordpress/i18n": "^7.2.0"
   }
 }
